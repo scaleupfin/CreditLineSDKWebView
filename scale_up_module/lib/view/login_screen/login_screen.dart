@@ -77,7 +77,7 @@ class LoginScreenTopImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.only(top: 100, left: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

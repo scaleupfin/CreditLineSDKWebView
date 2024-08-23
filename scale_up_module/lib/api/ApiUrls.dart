@@ -2,6 +2,7 @@ class ApiUrls{
 
   //final String baseUrl = 'https://gateway-uat.scaleupfin.com';
   //final String baseUrl = 'https://gateway-qa.scaleupfin.com';
+  final String AppHomeBaseUrl = 'https://internal.er15.xyz/';
   final String productCompanyDetail = '/aggregator/LeadAgg/ProductCompanyDetail';
   final String getLeadCurrentActivity="/services/lead/v1/GetLeadCurrentActivity";
   final String leadCurrentActivityAsync="/aggregator/LeadAgg/LeadCurrentActivityAsync";
@@ -64,6 +65,8 @@ class ApiUrls{
   final String resentOrderLoginOTP="/aggregator/LoanAccountAgg/ResentOrderLoginOTP";
   final String ValidateOrderOtp="/aggregator/LoanAccountAgg/ValidateOrderOtp";
 
-
+  //App Home
+  final String getPublishedSection = 'api/RetailerApp/GetPublishedSection';
+  final String getGoldenDealItem = 'api/RetailerApp/GetGoldenDealItem';
 
 }

@@ -51,11 +51,31 @@ class _SplashScreenState extends State<SplashScreen> {
             if (productProvider.productCompanyDetailResponseModel!.status!) {
               SaveData(productProvider.productCompanyDetailResponseModel!.response!).then((leadCurrentActivityAsyncData) {
                 // Handle the returned LeadCurrentResponseModel here
+                Utils.showToast("Hello Well Come", context);
                 if (leadCurrentActivityAsyncData != null) {
                   if(widget.isLoggedIn) {
+                    Utils.showToast("Is Login", context);
                     customerSequence(context, widget.getLeadData, leadCurrentActivityAsyncData, "pushReplacement");
                   } else {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Utils.showToast("Not Login", context);
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+                          activityId: leadCurrentActivityAsyncData.leadProductActivity!.first.activityMasterId!,
+                          subActivityId: leadCurrentActivityAsyncData.leadProductActivity!.first.subActivityMasterId!,
+                          companyID: productProvider
+                              .productCompanyDetailResponseModel!
+                              .response!
+                              .companyId,
+                          ProductID: productProvider
+                              .productCompanyDetailResponseModel!
+                              .response!
+                              .productId,
+                          MobileNumber: widget.mobileNumber,
+                        ),
+                      ),
+                    );
+                    /*WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) => LoginScreen(
@@ -73,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                         ),
                       );
-                    });
+                    });*/
                   }
                 }
               }).catchError((error) {

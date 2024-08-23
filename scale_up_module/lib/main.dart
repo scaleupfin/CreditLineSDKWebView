@@ -1,18 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:scale_up_module/shared_preferences/SharedPref.dart';
 import 'package:scale_up_module/utils/constants.dart';
-import 'package:scale_up_module/view/business_details_screen/business_details_screen.dart';
 import 'package:scale_up_module/view/checkoutView/CheckOutLogInOtpScreen.dart';
-import 'package:scale_up_module/view/checkoutView/CheckOutOtpScreen.dart';
-import 'package:scale_up_module/view/login_screen/login_screen.dart';
-import 'package:scale_up_module/view/personal_info/PersonalInformation.dart';
 import 'package:scale_up_module/view/splash_screen/SplashScreen.dart';
 import 'data_provider/DataProvider.dart';
-import 'view/agreement_screen/Agreementscreen.dart';
 
 var mobileNumber = "";
 var company = "";
@@ -33,6 +27,9 @@ void main() {
 
 class MyApp extends StatefulWidget {
   static const platform = MethodChannel('com.ScaleUP');
+  final Map<String, dynamic>? data;
+
+  MyApp({this.data});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -59,16 +56,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _initPlatform() {
-    MyApp.platform.setMethodCallHandler(_receiveFromHost);
-    _initializeData();
-
+    //MyApp.platform.setMethodCallHandler(_receiveFromHost);
+   // _initializeData();
   }
 
   Future<void> _initializeData() async {
     try {
-      final prefsUtil = await SharedPref.getInstance();
+        final prefsUtil = await SharedPref.getInstance();
       prefsUtil.saveString(BASE_URL, "https://gateway-qa.scaleupfin.com");
-      await MyApp.platform.invokeMethod('ScaleUP');
+     // await MyApp.platform.invokeMethod('ScaleUP');
     } catch (e) {
       print("Error initializing data: $e");
     }
@@ -81,15 +77,12 @@ class _MyAppState extends State<MyApp> {
     return "Success";
   }
 
-
   Widget _buildHome() {
     if (transactionId.isNotEmpty) {
       return CheckOutLogInOtpScreen(transactionId: transactionId);
     } else if (mobileNumber.isNotEmpty) {
       return SplashScreen(
-        mobileNumber: mobileNumber,
-        companyID: company,
-        productID: product);
+          mobileNumber: mobileNumber, companyID: company, productID: product);
     } else {
       return EmptyContainer();
     }
@@ -97,16 +90,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-   /* MyApp.platform.setMethodCallHandler((MethodCall call) async {
-      if (call.method == "logout") {
-        return doSomething();
-      }else{
-        MyApp.platform.setMethodCallHandler(_receiveFromHost);
-      }
-      return null;
-    });*/
-
-
     return MaterialApp(
       title: 'Scaleup',
       debugShowCheckedModeBanner: false,
@@ -118,18 +101,19 @@ class _MyAppState extends State<MyApp> {
         future: _initializeData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
           } else if (snapshot.hasError) {
             return Scaffold(
                 body: Center(child: Text('Error: ${snapshot.error}')));
           } else {
-           // return _buildHome();
-            return SplashScreen(mobileNumber: "7803994667", companyID: "CN_67", productID: "CreditLine",);
-        // return CheckOutLogInOtpScreen(transactionId:"2024853" );
+            //return _buildHome();
+             return SplashScreen(mobileNumber: "8959311437", companyID: "CN_67", productID: "CreditLine",);
+           //  return CheckOutLogInOtpScreen(transactionId:"2024853" );
             //return CheckOutOtpScreen(transactionId: "202457");
-           // return PaymentConfirmation(transactionReqNo: "202457",customerName: "Aarti Mukati",imageUrl:"https://csg10037ffe956af864.blob.core.windows.net/scaleupfiles/0d625556-7f61-47c9-a522-8fef21215b14.jpg",customerCareMoblie: "6263246384",customerCareEmail: "customer.care@scaleupfin.com");
+            // return PaymentConfirmation(transactionReqNo: "202457",customerName: "Aarti Mukati",imageUrl:"https://csg10037ffe956af864.blob.core.windows.net/scaleupfiles/0d625556-7f61-47c9-a522-8fef21215b14.jpg",customerCareMoblie: "6263246384",customerCareEmail: "customer.care@scaleupfin.com");
             //return CongratulationScreen();
-           // return SplashScreen(mobileNumber: "7803994667", companyID: "CN_67", productID: "CreditLine",);
+            // return SplashScreen(mobileNumber: "7803994667", companyID: "CN_67", productID: "CreditLine",);
             //return SplashScreen(mobileNumber: "8989804393", companyID: "2", productID: "2");
             //return ShowOffersScreen(activityId: 2, subActivityId: 2);
           }
@@ -144,7 +128,7 @@ class _MyAppState extends State<MyApp> {
       if (call.method == "ScaleUP") {
         final String data = call.arguments;
         jData = await jsonDecode(data);
-      } else if(call.method == "logout"){
+      } else if (call.method == "logout") {
         doSomething();
       }
     } on PlatformException catch (error) {
@@ -152,6 +136,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     if (jData != null) {
+      print("ScaleUP");
       final prefsUtil = await SharedPref.getInstance();
       prefsUtil.saveString(BASE_URL, jData['baseUrl']);
       setState(() {
@@ -161,6 +146,17 @@ class _MyAppState extends State<MyApp> {
         baseUrl = jData['baseUrl'] ?? jData['baseUrl'];
         isPayNow = jData['isPayNow'] ?? false;
         transactionId = jData['transactionId'] ?? jData['transactionId'];
+      });
+    } else {
+      final prefsUtil = await SharedPref.getInstance();
+      prefsUtil.saveString(BASE_URL, jData['baseUrl']);
+      setState(() {
+        mobileNumber = widget.data?['mobileNumber'] ?? "";
+        company = widget.data?['companyID'] ?? "";
+        product = widget.data?['productID'] ?? "";
+        baseUrl = widget.data?['baseUrl'] ?? jData['baseUrl'];
+        isPayNow = widget.data?['isPayNow'] ?? false;
+        transactionId = widget.data?['transactionId'] ?? jData['transactionId'];
       });
     }
   }

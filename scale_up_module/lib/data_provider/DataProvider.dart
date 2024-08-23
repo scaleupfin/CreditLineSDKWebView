@@ -9,6 +9,8 @@ import 'package:scale_up_module/view/pancard_screen/model/PostSingleFileResponse
 import 'package:scale_up_module/view/personal_info/model/PostPersonalDetailsResponseModel.dart';
 import 'package:scale_up_module/ProductCompanyDetailResponseModel.dart';
 
+import '../AppHome/GetPublishedSectionResModel.dart';
+import '../AppHome/GoldenDealItemResModel.dart';
 import '../api/ApiService.dart';
 import '../api/ExceptionHandling.dart';
 import '../view/aadhaar_screen/models/AadhaaGenerateOTPRequestModel.dart';
@@ -278,6 +280,15 @@ class DataProvider extends ChangeNotifier {
 
   Result< bool, Exception>? _lesentOrderLoginOTPData;
   Result< bool, Exception>? get lesentOrderLoginOTPData => _lesentOrderLoginOTPData;
+
+
+// App Home
+  Result<GetPublishedSectionResModel,Exception>? _getPublishedSection;
+  Result<GetPublishedSectionResModel,Exception>? get getPublishedSection =>_getPublishedSection;
+
+  Result<GoldenDealItemResModel,Exception>? _getGoldenDealItemData;
+  Result<GoldenDealItemResModel,Exception>? get getGoldenDealItemData =>_getGoldenDealItemData;
+
 
 
 
@@ -623,6 +634,19 @@ class DataProvider extends ChangeNotifier {
   }
 
 
+  Future<void> GetPublishedSection( String appType, int customerId,int wId,String lang,double lat,double lg) async {
+    _getPublishedSection = await apiService.getPublishedSection(appType,customerId,wId,lang,lat,lg);
+    notifyListeners();
+  }
+
+  Future<void> GetGoldenDealItem(int customerId,int warehouseId,String lang,int skip,int take) async {
+    _getGoldenDealItemData = await apiService.getGoldenDealItem(customerId,warehouseId,lang,skip,take);
+    notifyListeners();
+  }
+
+
+
+
 
   Future<void> disposeAllProviderData() async {
     _getCustomerOrderSummaryData = null;
@@ -675,6 +699,8 @@ class DataProvider extends ChangeNotifier {
     _getElectricityStateListData = null;
     _getElectricityAuthenticationData = null;
     _InProgressScreen = null;
+    _getPublishedSection=null;
+    _getGoldenDealItemData=null;
     notifyListeners();
   }
 

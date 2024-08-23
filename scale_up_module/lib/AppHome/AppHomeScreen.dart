@@ -1,41 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:scale_up_module/AppHome/GetPublishedSectionResModel.dart';
-import 'package:scale_up_module/AppHome/GoldenDealItemResModel.dart';
-import 'package:scale_up_module/api/FailureException.dart';
-import 'package:scale_up_module/data_provider/DataProvider.dart';
-import 'package:scale_up_module/main.dart';
-import 'package:scale_up_module/view/otp_screens/OtpScreen.dart';
-import 'package:scale_up_module/view/splash_screen/SplashScreen.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => DataProvider(),
-      child: MyWebApp(),
-    ),
-  );
-}
-
-class MyWebApp extends StatelessWidget {
-  const MyWebApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: AppHomeScreen(),
-    );
-  }
-}
+import '../../data_provider/DataProvider.dart';
+import '../api/FailureException.dart';
+import 'GetPublishedSectionResModel.dart';
+import 'GoldenDealItemResModel.dart';
 
 class AppHomeScreen extends StatefulWidget {
   AppHomeScreen({super.key});
@@ -71,7 +42,6 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Home"),),
       body: SafeArea(
         child: Consumer<DataProvider>(builder: (context, productProvider, child) {
           if (productProvider.getPublishedSection != null) {
@@ -81,7 +51,7 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                   getPublishedSectionResModelList.clear();
                   getPublishedSectionResModelList.addAll(data.data!);
 
-                  /*  for (var element in data.data!) {
+                /*  for (var element in data.data!) {
                     appItemsList.addAll(element.appItemsList!);
                   }
 */
@@ -174,62 +144,40 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Stack(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        if(_current==0){
-                          Map<String, dynamic> json = {
-                            "mobileNumber": "8959311437",
-                            "companyID": "CompanyID123",
-                            "productID": "ProductID123",
-                            "transactionId": "",
-                            "isPayNow": false,
-                            "baseUrl": "https://gateway-qa.scaleupfin.com"
-                          };
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return MyApp(data: json);
-                              },
-                            ),);
-                        }
-                      },
-                      child: CarouselSlider(
-                        options: CarouselOptions(
-                          height: 200.0,
-                          initialPage: 0,
-                          enlargeCenterPage: true,
-                          autoPlay: true,
-                          reverse: false,
-                          enableInfiniteScroll: true,
-                          autoPlayInterval: Duration(seconds: 5),
-                          autoPlayAnimationDuration: Duration(milliseconds: 2000),
-                          scrollDirection: Axis.horizontal,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          },
-                        ),
-                        items: section.appItemsList!.map((item) {
-                          return Builder(
-                            builder: (BuildContext context) {
-                              return Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white ,
-                                ),
-                                child: Image.network(
-                                  item.bannerImage.toString(),
-                                  fit: BoxFit.fill,
-                                ),
-                              );
-                            },
-                          );
-                        }).toList(),
+                    CarouselSlider(
+                      options: CarouselOptions(
+                        height: 200.0,
+                        initialPage: 0,
+                        enlargeCenterPage: true,
+                        autoPlay: true,
+                        reverse: false,
+                        enableInfiniteScroll: true,
+                        autoPlayInterval: Duration(seconds: 5),
+                        autoPlayAnimationDuration: Duration(milliseconds: 2000),
+                        scrollDirection: Axis.horizontal,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            _current = index;
+                          });
+                        },
                       ),
+                      items: section.appItemsList!.map((item) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 10.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white ,
+                              ),
+                              child: Image.network(
+                                item.bannerImage.toString(),
+                                fit: BoxFit.fill,
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
                     ),
                     Positioned(
                       bottom: 10.0,
@@ -332,7 +280,7 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
     );
   }*/
 
-  /* Widget verticalListView(List<GoldenDealItemList> goldenDealItemList) {
+ /* Widget verticalListView(List<GoldenDealItemList> goldenDealItemList) {
     return Container(
      // Set a fixed height for the horizontal ListView
       child: ListView.builder(
@@ -406,10 +354,10 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                               ),
                             ),
 
-                            /*SvgPicture.asset(
+                            SvgPicture.asset(
                               'assets/icons/ic_Like_heart.svg',
                               semanticsLabel: 'home',
-                            ),*/
+                            ),
                           ],
                         ),
                         SizedBox(height: 10,),
@@ -418,10 +366,10 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                           "MRP : ${item.price.toString()}", // Assuming there's a name field
                           style: TextStyle(color: Colors.black, fontSize: 12,),
                         ),
-                        /*SvgPicture.asset(
+                        SvgPicture.asset(
                           'assets/icons/ic_star.svg',
                           semanticsLabel: 'home',
-                        ),*/
+                        ),
                       ],
                     ),
                   ),
@@ -434,62 +382,8 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
       ),
     );
   }
+
+
+
+
 }
-
-
-/*class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: ()async {
-
-                Map<String, dynamic> json = {
-                  "mobileNumber": "8959311437",
-                  "companyID": "CompanyID123",
-                  "productID": "ProductID123",
-                  "transactionId": "",
-                  "isPayNow": false,
-                  "baseUrl": "https://gateway-qa.scaleupfin.com"
-                };
-
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                    builder: (context) {
-                      return MyApp(data: json);
-                },
-                ),);
-
-              },
-              child: Text('Business Loan'),
-            ),
-             const SizedBox(height: 15.0),
-            ElevatedButton(
-              onPressed: () {
-              },
-              child: Text('Supply Chan finance'),
-            )
-          ],
-        ),
-      ),   );
-  }
-}*/
