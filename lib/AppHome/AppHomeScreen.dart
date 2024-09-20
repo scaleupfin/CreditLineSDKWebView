@@ -7,7 +7,7 @@ import 'package:scale_up_module/utils/loader.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../api/FailureException.dart';
-import '../data_provider/AppHomeDataProvider.dart';
+import '../provider/AppHomeDataProvider.dart';
 import 'GetPublishedSectionResModel.dart';
 import 'GoldenDealItemResModel.dart';
 

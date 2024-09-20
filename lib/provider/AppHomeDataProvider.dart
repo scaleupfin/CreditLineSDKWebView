@@ -1,13 +1,11 @@
 
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
-
 
 import '../AppHome/GetPublishedSectionResModel.dart';
 import '../AppHome/GoldenDealItemResModel.dart';
 import '../api/ApiService.dart';
 import '../api/ExceptionHandling.dart';
+
 
 class AppHomeDataProvider extends ChangeNotifier {
   final ApiService apiService = ApiService();
