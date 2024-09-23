@@ -19,7 +19,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneNumberController = TextEditingController();
-  bool _isLoading = false;
+  bool _isButtonTapped = true;
 
   @override
   void dispose() {
@@ -264,9 +264,12 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressed: authProvider.isButtonEnabled &&
                                   _formKey.currentState!.validate()
                               ? () async {
-                                  TDeviceUtils.hideKeyboard(context);
-                                  authProvider.setLoading(true);
-                                  await _handleGetOtp(authProvider);
+                                  if (_isButtonTapped) {
+                                    _isButtonTapped = false;
+                                    TDeviceUtils.hideKeyboard(context);
+                                    authProvider.setLoading(true);
+                                    await _handleGetOtp(authProvider);
+                                  }
                                 }
                               : null,
                           child: authProvider.isButtonEnabled &&
@@ -302,14 +305,13 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> _handleGetOtp(AuthProvider authProvider) async {
     try {
-      // Simulate a delay of 3 seconds
       await Future.delayed(const Duration(seconds: 3));
-      // Perform the action you want to do on button press
       print('OTP sent');
       print('Phone number: ${_phoneNumberController.text}');
     } finally {
       // Ensure loading is reset after the operation
       authProvider.setLoading(false);
     }
+    _isButtonTapped = true;
   }
 }

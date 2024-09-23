@@ -27,9 +27,9 @@ class AuthProvider with ChangeNotifier {
   void _updateButtonEnabled() {
     _isButtonEnabled = _isAuthorized && _sendReminders;
   }
+
   void setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
   }
-
 }
