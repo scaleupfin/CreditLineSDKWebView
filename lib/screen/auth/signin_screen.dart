@@ -310,7 +310,6 @@ class _SignInScreenState extends State<SignInScreen> {
         print('Phone number: ${_phoneNumberController.text}');
       }
     } finally {
-      // Ensure loading is reset after the operation
       authProvider.setLoading(false);
     }
     _isButtonTapped = true;
