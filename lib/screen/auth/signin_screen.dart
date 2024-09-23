@@ -10,7 +10,7 @@ import '../../utils/constants/sizes.dart';
 import '../../utils/device/device_utility.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  const SignInScreen({super.key});
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -36,7 +36,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final authProvider = context.watch<AuthProvider>();
     return Scaffold(
@@ -122,7 +121,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   Image.asset(
                                     "assets/credit_card/images/flag.png",
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Text(
                                     '+91',
                                     style: GoogleFonts.urbanist(
@@ -166,7 +165,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   .setSendReminders(value ?? false);
                             },
                             fillColor:
-                                MaterialStateProperty.resolveWith((states) {
+                                WidgetStateProperty.resolveWith((states) {
                               return TColors.white;
                             }),
                             activeColor: TColors.white,
@@ -205,7 +204,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   .setAuthorized(value ?? false);
                             },
                             fillColor:
-                                MaterialStateProperty.resolveWith((states) {
+                                WidgetStateProperty.resolveWith((states) {
                               return TColors.white;
                             }),
                             activeColor: TColors.white,
@@ -306,8 +305,10 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _handleGetOtp(AuthProvider authProvider) async {
     try {
       await Future.delayed(const Duration(seconds: 3));
-      print('OTP sent');
-      print('Phone number: ${_phoneNumberController.text}');
+      if (kDebugMode) {
+        print('OTP sent');
+        print('Phone number: ${_phoneNumberController.text}');
+      }
     } finally {
       // Ensure loading is reset after the operation
       authProvider.setLoading(false);

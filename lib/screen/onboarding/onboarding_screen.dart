@@ -80,11 +80,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     return OnBoardingContent(
                       title: _onboardData[index].title,
                       description: _onboardData[index].description,
-                      image:
-                          (Theme.of(context).brightness == Brightness.dark &&
-                                  _onboardData[index].imageDarkTheme != null)
-                              ? _onboardData[index].imageDarkTheme!
-                              : _onboardData[index].image,
+                      image: (Theme.of(context).brightness == Brightness.dark &&
+                              _onboardData[index].imageDarkTheme != null)
+                          ? _onboardData[index].imageDarkTheme!
+                          : _onboardData[index].image,
                       isTextOnTop: false,
                     );
                   },
@@ -119,7 +118,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const SignInScreen()));
+                                      builder: (context) =>
+                                          const SignInScreen()));
                             } else {
                               _controller.nextPage(
                                 duration: const Duration(milliseconds: 200),
