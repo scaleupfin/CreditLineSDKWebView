@@ -1,4 +1,5 @@
 import 'package:deynamic_update/provider/auth_provider.dart';
+import 'package:deynamic_update/screen/auth/otp_screen.dart';
 import 'package:deynamic_update/utils/validators/validation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -305,6 +306,11 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _handleGetOtp(AuthProvider authProvider) async {
     try {
       await Future.delayed(const Duration(seconds: 3));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+              const OtpScreen()));
       if (kDebugMode) {
         print('OTP sent');
         print('Phone number: ${_phoneNumberController.text}');
