@@ -5,7 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import '../../utils/common_widgets/PermissionPage.dart';
 import '../../utils/constants/colors.dart';
 import '../../utils/constants/sizes.dart';
 import '../../utils/device/device_utility.dart';
@@ -25,7 +27,6 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   void dispose() {
     _phoneNumberController.dispose();
-    TDeviceUtils.hideKeyboard(context);
     super.dispose();
   }
 
@@ -37,8 +38,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
     final authProvider = context.watch<AuthProvider>();
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: TColors.primary,
       resizeToAvoidBottomInset: true,
@@ -268,7 +269,26 @@ class _SignInScreenState extends State<SignInScreen> {
                                     _isButtonTapped = false;
                                     TDeviceUtils.hideKeyboard(context);
                                     authProvider.setLoading(true);
-                                    await _handleGetOtp(authProvider);
+                                    PermissionStatus cameraPermissionStatus =
+                                        await Permission.camera.status;
+                                    PermissionStatus
+                                        microphonePermissionStatus =
+                                        await Permission.microphone.status;
+                                    PermissionStatus smsPermissionStatus =
+                                        await Permission.sms.status;
+
+                                    if (cameraPermissionStatus.isGranted &&
+                                        microphonePermissionStatus.isGranted &&
+                                        smsPermissionStatus.isGranted) {
+                                      await _handleGetOtp(authProvider);
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const PermissionPage()),
+                                      );
+                                    }
                                   }
                                 }
                               : null,
@@ -306,11 +326,8 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _handleGetOtp(AuthProvider authProvider) async {
     try {
       await Future.delayed(const Duration(seconds: 3));
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-              const OtpScreen()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const OtpScreen()));
       if (kDebugMode) {
         print('OTP sent');
         print('Phone number: ${_phoneNumberController.text}');

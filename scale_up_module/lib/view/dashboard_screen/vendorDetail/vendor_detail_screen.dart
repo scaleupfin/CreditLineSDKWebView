@@ -209,7 +209,7 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
                             ),
                             const Spacer(),
                             SvgPicture.asset(
-                              'assets/icons/notification.svg',
+                              'assets/icons/notification_icon.svg',
                               semanticsLabel: 'notification SVG',
                               color: whiteColor,
                             ),

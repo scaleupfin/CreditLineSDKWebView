@@ -250,7 +250,7 @@ class _Vendor_detail_screen1State extends State<Vendor_detail_screen1>
                                 ),
                                 const Spacer(),
                                 SvgPicture.asset(
-                                  'assets/icons/notification.svg',
+                                  'assets/icons/notification_icon.svg',
                                   semanticsLabel: 'notification SVG',
                                   color: whiteColor,
                                 ),

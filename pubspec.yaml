@@ -41,6 +41,8 @@ dependencies:
   flutter_svg: ^2.0.9
   shimmer: ^3.0.0
   google_fonts: ^4.0.4
+  sms_autofill: ^2.4.0
+  permission_handler: ^11.3.1
 
   scale_up_module:
    path: ./scale_up_module
