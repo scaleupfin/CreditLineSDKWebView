@@ -1,5 +1,4 @@
-import 'package:deynamic_update/screen/create_account/widgets/pan_number.dart';
-import 'package:deynamic_update/screen/create_account/widgets/setup_account.dart';
+import 'package:deynamic_update/screen/create_account/setup_account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -1,4 +1,4 @@
-import 'package:deynamic_update/screen/create_account/widgets/pan_number.dart';
+import 'package:deynamic_update/screen/create_account/pan_number.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../utils/constants/colors.dart';
 
 class SetUpAccount extends StatefulWidget {
-  const SetUpAccount({super.key});
+  SetUpAccount({super.key});
 
   @override
   State<SetUpAccount> createState() => _SetUpAccountState();
@@ -21,7 +21,8 @@ class _SetUpAccountState extends State<SetUpAccount> {
 
     return Scaffold(
       backgroundColor: TColors.primary,
-      body: SafeArea( // Wrap with SafeArea
+      body: SafeArea(
+        // Wrap with SafeArea
         top: true,
         bottom: true,
         child: LayoutBuilder(
@@ -32,7 +33,8 @@ class _SetUpAccountState extends State<SetUpAccount> {
             return SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: screenHeight, // Ensures the scrollable content takes up the full screen height
+                  minHeight:
+                      screenHeight, // Ensures the scrollable content takes up the full screen height
                 ),
                 child: IntrinsicHeight(
                   child: Column(
@@ -86,16 +88,17 @@ class _SetUpAccountState extends State<SetUpAccount> {
                               width: screenWidth, // Use screen width
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.00, // 0% of screen width
-                                  vertical: screenHeight * 0.03, // 3% of screen height
+                                  horizontal: screenWidth * 0.00,
+                                  // 0% of screen width
+                                  vertical: screenHeight *
+                                      0.03, // 3% of screen height
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => PanNumber(
-                                        ),
+                                        builder: (context) => PanNumber(),
                                       ),
                                     );
                                   },
@@ -130,6 +133,7 @@ class _SetUpAccountState extends State<SetUpAccount> {
           },
         ),
       ),
-    );;
+    );
+    ;
   }
 }

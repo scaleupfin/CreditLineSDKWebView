@@ -1,3 +1,4 @@
+import 'package:deynamic_update/screen/auth/otp_screen.dart';
 import 'package:deynamic_update/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -185,13 +186,21 @@ class _PermissionPageState extends State<PermissionPage>
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                if (_cameraGranted &&
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OtpScreen()));
+                               /* if (_cameraGranted &&
                                     _microphoneGranted &&
                                     _smsGranted) {
                                   //  _navigateToHome(dataProvider);
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OtpScreen()));
                                 } else {
                                   _requestPermissions();
-                                }
+                                }*/
                               },
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
