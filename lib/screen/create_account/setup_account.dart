@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../utils/constants/colors.dart';
+import '../../utils/routes/routes_names.dart';
 
 class SetUpAccount extends StatefulWidget {
-  SetUpAccount({super.key});
+  final String? emailID;
+  const SetUpAccount(
+      {super.key, this.emailID});
 
   @override
   State<SetUpAccount> createState() => _SetUpAccountState();
@@ -95,12 +98,20 @@ class _SetUpAccountState extends State<SetUpAccount> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.pushReplacement(
+
+                                    Navigator.pushReplacementNamed(
+                                      context,
+                                      RouteNames.PanNumberScreen,
+                                      arguments: {
+                                        'emailId': widget.emailID,
+                                      },
+                                    );
+                                   /* Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => PanNumber(),
                                       ),
-                                    );
+                                    );*/
                                   },
                                   child: Text(
                                     "Setup account",

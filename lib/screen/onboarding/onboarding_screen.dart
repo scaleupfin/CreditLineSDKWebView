@@ -2,8 +2,11 @@ import 'package:deynamic_update/screen/auth/signin_screen.dart';
 import 'package:deynamic_update/screen/onboarding/widgets/onboarding_content.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../shared_preferences/shared_pref.dart';
+import '../../utils/ConstentScreen.dart';
 import '../../utils/constants/colors.dart';
 import '../../utils/device/device_utility.dart';
+import '../../utils/routes/routes_names.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -115,11 +118,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_currentPage + 1 == _onboardData.length) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SignInScreen()));
+                              SharedPref.setBoolFuture(IS_show, true);
+                              Navigator.pushReplacementNamed(
+                                context,
+                                RouteNames.login,
+                              );
                             } else {
                               _controller.nextPage(
                                 duration: const Duration(milliseconds: 200),

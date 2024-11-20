@@ -6,9 +6,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../constants/sizes.dart';
+import '../routes/routes_names.dart';
 
 class PermissionPage extends StatefulWidget {
-  const PermissionPage({super.key});
+  final String? mobileNumber;
+
+  const PermissionPage(
+      {super.key, this.mobileNumber});
 
   @override
   _PermissionPageState createState() => _PermissionPageState();
@@ -186,21 +190,13 @@ class _PermissionPageState extends State<PermissionPage>
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => OtpScreen()));
-                               /* if (_cameraGranted &&
-                                    _microphoneGranted &&
-                                    _smsGranted) {
-                                  //  _navigateToHome(dataProvider);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => OtpScreen()));
-                                } else {
-                                  _requestPermissions();
-                                }*/
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.otpScreen,
+                                  arguments: {
+                                    'mobileNumber':  widget.mobileNumber,
+                                  },
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,

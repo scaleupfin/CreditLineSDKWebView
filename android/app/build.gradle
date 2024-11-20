@@ -12,21 +12,38 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
+// Flutter versioning properties
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode', '1').toInteger()
+def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0')
 
 android {
-    namespace "com.example.deynamic_update"
+    namespace "com.scaluppay"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+
+    defaultConfig {
+        applicationId "com.scaluppay"
+        minSdkVersion 23
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutterVersionCode
+        versionName flutterVersionName
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'scaleup-key'
+            storePassword '123456'
+            keyPassword '123456'
+            storeFile file('scaleup-key.jks')
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+            // Proguard rules can be added here for release
+        }
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -38,33 +55,8 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
-    rootProject.allprojects {
-        repositories {
-            google()
-            mavenCentral()
-            flatDir {
-                dirs 'libs'
-            }
-        }
-    }
-
-    defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.deynamic_update"
-        minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-    }
-
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+        main {
+            java.srcDirs += 'src/main/kotlin'
         }
     }
 }
@@ -74,4 +66,15 @@ flutter {
 }
 
 dependencies {
+    // Add dependencies here as needed
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
+    }
 }

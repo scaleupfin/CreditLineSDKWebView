@@ -1,5 +1,6 @@
 import 'package:deynamic_update/provider/auth_provider.dart';
 import 'package:deynamic_update/screen/auth/otp_screen.dart';
+import 'package:deynamic_update/utils/UtilsClass.dart';
 import 'package:deynamic_update/utils/validators/validation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,15 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import '../../api/ApiService.dart';
+import '../../api/FailureException.dart';
+import '../../shared_preferences/shared_pref.dart';
+import '../../utils/ConstentScreen.dart';
 import '../../utils/common_widgets/PermissionPage.dart';
 import '../../utils/constants/colors.dart';
 import '../../utils/constants/sizes.dart';
 import '../../utils/device/device_utility.dart';
+import '../../utils/routes/routes_names.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -263,8 +269,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           bottom: screenHeight * 0.06, // 5% of screen height
                         ),
                         child: ElevatedButton(
-                          onPressed: authProvider.isButtonEnabled &&
-                                  _formKey.currentState!.validate()
+                          onPressed: authProvider.isButtonEnabled && _formKey.currentState!.validate()
                               ? () async {
                                   if (_isButtonTapped) {
                                     _isButtonTapped = false;
@@ -283,12 +288,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         smsPermissionStatus.isGranted) {
                                       await _handleGetOtp(authProvider);
                                     } else {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const PermissionPage()),
-                                      );
+                                      callGenrateOtpApi(context,authProvider);
                                     }
                                   }
                                 }
@@ -337,5 +337,42 @@ class _SignInScreenState extends State<SignInScreen> {
       authProvider.setLoading(false);
     }
     _isButtonTapped = true;
+  }
+
+  void callGenrateOtpApi(BuildContext context, AuthProvider authProvider)async {
+    await Provider.of<AuthProvider>(context, listen: false).fetchOtpData(_phoneNumberController.text.toString());
+    final productProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (productProvider.getFetchOtpData != null) {
+     // Navigator.of(context, rootNavigator: true).pop();
+      productProvider.getFetchOtpData!.when(
+        success: (otpResponceModel) async {
+          authProvider.setLoading(false);
+          _isButtonTapped = true;
+          if (otpResponceModel.status!) {
+            SharedPref.saveString(MOBILE_NUMBER,_phoneNumberController.text.toString());
+            Navigator.pushNamed(
+              context,
+              RouteNames.permiction,
+              arguments: {
+                'mobileNumber':  _phoneNumberController.text.toString(),
+              },
+            );
+          } else {
+            UtilsClass.showBottomToast(otpResponceModel.message!);
+          }
+        },
+        failure: (exception) {
+          authProvider.setLoading(false);
+          _isButtonTapped = true;
+          if (exception is ApiException) {
+            if (exception.statusCode == 401) {
+              UtilsClass.showBottomToast(exception.errorMessage);
+              //ApiService().handle401(context);
+            }
+          }
+        },
+      );
+    }
+
   }
 }

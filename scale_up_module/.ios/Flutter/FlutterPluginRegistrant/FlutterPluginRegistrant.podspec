@@ -21,7 +21,7 @@ Depends on all your plugins, and provides a function to register them.
   s.dependency 'Flutter'
   s.dependency 'audio_session'
   s.dependency 'camera_avfoundation'
-  s.dependency 'connectivity'
+  s.dependency 'connectivity_plus'
   s.dependency 'file_picker'
   s.dependency 'fluttertoast'
   s.dependency 'image_cropper'

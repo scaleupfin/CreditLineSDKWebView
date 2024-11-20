@@ -1,20 +1,67 @@
 import 'package:deynamic_update/utils/common_widgets/referal_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../utils/constants/colors.dart';
 import '../../utils/constants/sizes.dart';
+import '../../utils/routes/routes_names.dart';
 import '../create_account/setup_account.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
 
   @override
-  State<EmailVerificationScreen> createState() =>
-      _EmailVerificationScreenState();
+  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  bool isLoading = false;
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> signInWithGoogle() async {
+    setState(() {
+      isLoading = true; // Show loader
+    });
+
+    try {
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      user = userCredential.user;
+
+      Navigator.pushReplacementNamed(
+        context,
+        RouteNames.setupAccountScreen,
+        arguments: {
+          'emailId': user!.email,
+        },
+      );
+
+      print("Bhagwan${user!.email}");
+    } catch (e) {
+      print(e.toString());
+    } finally {
+      setState(() {
+        isLoading = false; // Hide loader
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,10 +143,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             const SizedBox(height: 24),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SetUpAccount()));
+                                signInWithGoogle();
                               },
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
@@ -138,11 +182,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                         fontWeight: FontWeight.w400,
                                         color: const Color(0xFF828282),
                                       ),
-                                    ),
+                                    )
                                   ],
                                 ),
                               ),
                             ),
+                            if (isLoading)
+                              Container(
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
                           ],
                         ),
                         SizedBox(

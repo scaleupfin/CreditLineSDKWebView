@@ -8,11 +8,9 @@ import '../../../utils/validators/validation.dart';
 import 'complete_profile.dart';
 
 class PanNumber extends StatefulWidget {
-
-
-  const PanNumber({
-    Key? key,
-  }) : super(key: key);
+  final String? emailID;
+  const PanNumber(
+      {super.key, this.emailID});
 
   @override
   State<PanNumber> createState() => _PanNumberState();

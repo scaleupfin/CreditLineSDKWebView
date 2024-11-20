@@ -2,8 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:scale_up_module/main.dart';
-import 'package:scale_up_module/utils/loader.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../api/FailureException.dart';
@@ -185,14 +183,14 @@ class _AppHomeScreenState extends State<AppHomeScreen>
                             "baseUrl": "https://gateway-qa.scaleupfin.com"
                           };
 
-                          Navigator.push(
+                          /*Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) {
                                 return MyApp(data: json);
                               },
                             ),
-                          );
+                          );*/
                         }
                       },
                       child: CarouselSlider(
@@ -594,14 +592,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   "baseUrl": "https://gateway-qa.scaleupfin.com"
                 };
 
-                Navigator.push(
+                /*Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
                       return MyApp(data: json);
                     },
                   ),
-                );
+                );*/
               },
               child: Text('Business Loan'),
             ),

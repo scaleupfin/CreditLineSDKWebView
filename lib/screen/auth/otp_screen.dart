@@ -1,15 +1,27 @@
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:deynamic_update/screen/auth/email_verify_screen.dart';
+import 'package:deynamic_update/screen/auth/model/OtpValidateModel.dart';
+import 'package:deynamic_update/shared_preferences/shared_pref.dart';
+import 'package:deynamic_update/utils/ConstentScreen.dart';
+import 'package:deynamic_update/utils/UtilsClass.dart';
 import 'package:deynamic_update/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../../api/FailureException.dart';
+import '../../provider/auth_provider.dart';
 import '../../utils/constants/sizes.dart';
 import '../../utils/device/device_utility.dart';
+import '../../utils/routes/routes_names.dart';
 import '../../utils/validators/validation.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+  final String? mobileNumber;
+
+  const OtpScreen(
+      {super.key, this.mobileNumber});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -17,10 +29,20 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final _otpController = TextEditingController();
+  final CountDownController _controller = CountDownController();
   bool _isButtonTapped = true;
+  bool _isEnabled = false;
+  int _duration = 30;
+
 
   @override
+  void initState() {
+    _controller.start();
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
     return Scaffold(
       body: LayoutBuilder(builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
@@ -82,7 +104,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                     ),
                     Text(
-                      'OTP sent on XXXXXXX1252',
+                      'OTP sent on XXXXXXX${UtilsClass.getLastFour(widget.mobileNumber!)}',
                       style: GoogleFonts.urbanist(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -127,16 +149,82 @@ class _OtpScreenState extends State<OtpScreen> {
                           validator: TValidator.validatePhoneNumber),
                     ),
                     const SizedBox(height: 22),
-                    Center(
-                      child: Text(
-                        'Resent OTP in 43 Sec',
-                        style: GoogleFonts.urbanist(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.red),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                      Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 15),
+                          child: TextButton(
+                              onPressed: _isEnabled
+                                  ? () {
+                                callGenrateOtpApi(context);
+                                setState(() {
+                                  _duration = 45;
+                                  _isEnabled = false;
+                                  _otpController.clear();
+                                  _controller.restart(duration: _duration);
+                                });
+                              }
+                                  : null,
+                              child: const Text(
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: TColors.primary,
+                                  ),
+                                  "Resend otp"))),
+                      const SizedBox(height: 20.0,),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15, right: 15),
+                        child: CircularCountDownTimer(
+                          duration: _duration,
+                          initialDuration: 0,
+                          controller: _controller,
+                          width: 25,
+                          height: 25,
+                          ringColor: Colors.grey[300]!,
+                          ringGradient: null,
+                          fillColor: TColors.primary,
+                          fillGradient: null,
+                          backgroundColor: Colors.white,
+                          backgroundGradient: null,
+                          strokeWidth: 5.0,
+                          strokeCap: StrokeCap.round,
+                          textStyle: const TextStyle(
+                              fontSize: 15.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal),
+                          textAlign: TextAlign.center,
+                          textFormat: CountdownTextFormat.S,
+                          isReverse: true,
+                          isReverseAnimation: true,
+                          isTimerTextShown: true,
+                          autoStart: true,
+                          onStart: () {
+                            debugPrint('Countdown Started');
+                          },
+                          onComplete: () {
+                            debugPrint('Countdown Ended');
+                            setState(() {
+                              _isEnabled = true;
+                              _controller.reset();
+                            });
+                          },
+                          onChange: (String timeStamp) {
+                            // debugPrint('Countdown Changed $timeStamp');
+                          },
+                          timeFormatterFunction: (defaultFormatterFunction, duration) {
+                            if (duration.inSeconds == 0) {
+                              return duration.inSeconds;
+                            } else {
+                              return Function.apply(
+                                  defaultFormatterFunction, [duration]);
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                    ],),
+                    const SizedBox(height: 22),
                     SizedBox(
                       width: screenWidth, // use screen width
                       child: Padding(
@@ -147,14 +235,12 @@ class _OtpScreenState extends State<OtpScreen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
+                            _isButtonTapped = false;
+                            authProvider.setLoading(true);
                             TDeviceUtils.hideKeyboard(context);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const EmailVerificationScreen()));
+                            validateOtp(context,_otpController,authProvider);
                           },
-                          child: !_isButtonTapped
+                          child: authProvider.isLoading
                               ? const SizedBox(
                                   width: 24,
                                   height: 24,
@@ -181,5 +267,70 @@ class _OtpScreenState extends State<OtpScreen> {
         );
       }),
     );
+  }
+
+  void callGenrateOtpApi(BuildContext context, )async {
+    //authProvider.setLoading(false);
+    UtilsClass.onLoading(context, "");
+    await Provider.of<AuthProvider>(context, listen: false).fetchOtpData(widget.mobileNumber!);
+    final productProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (productProvider.getFetchOtpData != null) {
+      Navigator.of(context, rootNavigator: true).pop();
+      productProvider.getFetchOtpData!.when(
+        success: (otpResponceModel) async {
+          if (otpResponceModel.status!) {
+            SharedPref.saveString(MOBILE_NUMBER,widget.mobileNumber!);
+            UtilsClass.showBottomToast("Genrate Otp");
+
+          } else {
+            UtilsClass.showBottomToast(otpResponceModel.message!);
+          }
+        },
+        failure: (exception) {
+          if (exception is ApiException) {
+            if (exception.statusCode == 401) {
+              UtilsClass.showBottomToast(exception.errorMessage);
+              //ApiService().handle401(context);
+            }
+          }
+        },
+      );
+    }
+
+  }
+
+  void validateOtp(BuildContext context, TextEditingController otpController,AuthProvider authProvider)async {
+    await Provider.of<AuthProvider>(context, listen: false).otpValidateData(OtpValidateModel(mobileNo: widget.mobileNumber,otp: otpController.text.toString().trim()));
+    final productProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (productProvider.getOtpValidateData != null) {
+      // Navigator.of(context, rootNavigator: true).pop();
+      productProvider.getOtpValidateData!.when(
+        success: (otpResponceModel) async {
+          _isButtonTapped = true;
+          authProvider.setLoading(false);
+          if (otpResponceModel.status!) {
+            SharedPref.saveString(USER_ID, otpResponceModel.userId!);
+            SharedPref.saveString(TOKEN, otpResponceModel.userTokan!);
+            SharedPref.saveBool(Is_Login, true);
+            Navigator.pushReplacementNamed(
+              context,
+              RouteNames.EmailScreen,
+            );
+          } else {
+            UtilsClass.showBottomToast(otpResponceModel.message!);
+          }
+        },
+        failure: (exception) {
+          _isButtonTapped = true;
+          authProvider.setLoading(false);
+          if (exception is ApiException) {
+            if (exception.statusCode == 401) {
+              UtilsClass.showBottomToast(exception.errorMessage);
+              //ApiService().handle401(context);
+            }
+          }
+        },
+      );
+    }
   }
 }

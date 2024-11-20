@@ -1,3 +1,4 @@
+import 'package:deynamic_update/AppHome/AppHomeScreen.dart';
 import 'package:deynamic_update/screen/create_account/setup_account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                SetUpAccount()));
+                                                AppHomeScreen()));
 
                                   },
                                   child: Text(
