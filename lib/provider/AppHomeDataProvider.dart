@@ -17,9 +17,6 @@ class AppHomeDataProvider extends ChangeNotifier {
   Result<GoldenDealItemResModel,Exception>? _getGoldenDealItemData;
   Result<GoldenDealItemResModel,Exception>? get getGoldenDealItemData =>_getGoldenDealItemData;
 
-
-
-
   Future<void> GetPublishedSection() async {
     isLoading=true;
     _getPublishedSection = await apiService.getPublishedSection();
