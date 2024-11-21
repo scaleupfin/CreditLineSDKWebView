@@ -1,4 +1,5 @@
 import 'package:deynamic_update/provider/AppHomeDataProvider.dart';
+import 'package:deynamic_update/provider/PanProvider.dart';
 import 'package:deynamic_update/provider/auth_provider.dart';
 import 'package:deynamic_update/screen/onboarding/onboarding_screen.dart';
 import 'package:deynamic_update/shared_preferences/shared_pref.dart';
@@ -20,6 +21,7 @@ void main() async {
         ChangeNotifierProvider<ThemeModel>(create: (_) => ThemeModel()),
         ChangeNotifierProvider<AppHomeDataProvider>(create: (_) => AppHomeDataProvider()),
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider<PanProvider>(create: (_) => PanProvider()),
       ],
       child: const MyWebApp(),
     ),
@@ -80,7 +82,7 @@ class MyWebApp extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 theme: themeModel.currentTheme,
                 initialRoute: isShow
-                    ? RouteNames.EmailScreen
+                    ? RouteNames.bottomNav
                     : RouteNames.onBoardingScreen,
                 onGenerateRoute: Routes.generateRoutes,
               );

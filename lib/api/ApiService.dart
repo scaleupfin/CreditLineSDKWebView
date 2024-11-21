@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:deynamic_update/utils/UtilsClass.dart';
 
-import '../AppHome/GetPublishedSectionResModel.dart';
+import '../AppHome/AppHomeResponceModel.dart';
 import '../AppHome/GoldenDealItemResModel.dart';
 import '../screen/auth/model/OtpModel.dart';
 import '../screen/auth/model/OtpResponceModel.dart';
 import '../screen/auth/model/OtpValidateModel.dart';
+import '../screen/create_account/model/ValidPanCardResponsModel.dart';
+import '../shared_preferences/shared_pref.dart';
+import '../utils/ConstentScreen.dart';
 import '../utils/InternetConnectivity.dart';
 import '../utils/constants/api_constants.dart';
 import 'ApiUrls.dart';
@@ -90,28 +93,27 @@ class ApiService {
   }
 
 
-  Future<Result<GetPublishedSectionResModel, Exception>> getPublishedSection(
-      String appType,
-      int customerId,
-      int wId,
-      String lang,
-      double lat,
-      double lg) async {
+  Future<Result<AppHomeResponceModel, Exception>> getPublishedSection() async {
     try {
       if (await internetConnectivity.networkConnectivity()) {
+        var token = await SharedPref.getStringFuture(TOKEN);
         final response = await interceptor.get(
           Uri.parse(
-              '${appHomeBaseUrl + getHomePublishedSection}?appType=$appType&customerId=$customerId&wId=$wId&lang=$lang&lat=$lat&lg=$lg'),
-          headers: {'Content-Type': 'application/json', 'noencryption': '1'},
+              '${baseUrl+apiUrls.GetAppHomeListForApp}'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+            // Set the content type as JSON
+          },
         );
-        print(response.body); // Print the response body once here
+        print(response.body);
         switch (response.statusCode) {
           case 200:
             // Parse the JSON response
 
             final dynamic jsonData = json.decode(response.body);
-            final GetPublishedSectionResModel responseModel =
-                GetPublishedSectionResModel.fromJson(jsonData);
+            final AppHomeResponceModel responseModel =
+            AppHomeResponceModel.fromJson(jsonData);
 
             return Success(responseModel);
 
@@ -150,6 +152,43 @@ class ApiService {
             return Failure(ApiException(response.statusCode, ""));
         }
       } else {
+        return Failure(Exception("No Internet connection"));
+      }
+    } on Exception catch (e) {
+      return Failure(e);
+    }
+  }
+
+  //panCard Module
+  Future<Result<ValidPanCardResponsModel, Exception>> getLeadValidPanCard(
+      String panNumber) async {
+    try {
+      if (await internetConnectivity.networkConnectivity()) {
+        var token = await SharedPref.getStringFuture(TOKEN);
+        final response = await interceptor.get(
+          Uri.parse(
+              '${baseUrl+apiUrls.getLeadValidPanCard}?PanNumber=$panNumber'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+            // Set the content type as JSON
+          },
+        );
+
+        print(response.body); // Print the response body once here
+        switch (response.statusCode) {
+        // Parse the JSON response
+          case 200:
+            final dynamic jsonData = json.decode(response.body);
+            final ValidPanCardResponsModel responseModel =
+            ValidPanCardResponsModel.fromJson(jsonData);
+            return Success(responseModel);
+          default:
+          // 3. return Failure with the desired exception
+            return Failure(ApiException(response.statusCode, ""));
+        }
+      } else {
+        UtilsClass.showBottomToast("No Internet connection");
         return Failure(Exception("No Internet connection"));
       }
     } on Exception catch (e) {

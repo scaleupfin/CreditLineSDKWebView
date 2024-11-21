@@ -8,4 +8,6 @@ class RouteNames {
   static const String EmailScreen = "emailScreen";
   static const String setupAccountScreen = "setupAccountScreen";
   static const String PanNumberScreen = "PanNumberScreen";
+  static const String HomeScreen = "HomeScreen";
+  static const String bottomNav = "bottomNav";
 }

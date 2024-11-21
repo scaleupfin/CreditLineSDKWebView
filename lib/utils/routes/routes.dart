@@ -1,3 +1,5 @@
+import 'package:deynamic_update/AppHome/AppHomeScreen.dart';
+import 'package:deynamic_update/bottom_nav/BottomNav.dart';
 import 'package:deynamic_update/screen/create_account/pan_number.dart';
 import 'package:deynamic_update/utils/routes/routes_names.dart';
 import 'package:flutter/material.dart';
@@ -45,10 +47,18 @@ class Routes {
             builder: (BuildContext context) => SetUpAccount(emailID: emailID,));
 
       case (RouteNames.PanNumberScreen):
-        final args = settings.arguments as Map<String, dynamic>;
-        final String emailID = args['emailId'] as String;
+        //final args = settings.arguments as Map<String, dynamic>;
+        //final String emailID = args['emailId'] as String;
         return MaterialPageRoute(
-            builder: (BuildContext context) => PanNumber(emailID: emailID,));
+            builder: (BuildContext context) => PanNumber(/*emailID: emailID,*/));
+
+      case (RouteNames.bottomNav):
+        return MaterialPageRoute(
+            builder: (BuildContext context) => BottomNav());
+
+      case (RouteNames.HomeScreen):
+        return MaterialPageRoute(
+            builder: (BuildContext context) => AppHomeScreen());
 
       default:
         return MaterialPageRoute(

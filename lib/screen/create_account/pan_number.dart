@@ -1,25 +1,35 @@
+import 'package:deynamic_update/provider/PanProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../../../utils/constants/colors.dart';
 import '../../../utils/validators/validation.dart';
+import '../../api/FailureException.dart';
+import '../../utils/UtilsClass.dart';
 import 'complete_profile.dart';
+import 'model/ValidPanCardResponsModel.dart';
 
 class PanNumber extends StatefulWidget {
-  final String? emailID;
-  const PanNumber(
-      {super.key, this.emailID});
+  //final String? emailID;
+  const PanNumber({super.key});
+
+  /* const PanNumber(
+      {super.key, this.emailID});*/
 
   @override
   State<PanNumber> createState() => _PanNumberState();
 }
 
 class _PanNumberState extends State<PanNumber> {
-
   final panNumberController = TextEditingController();
   var isChecked = false;
+  var isPanValid = false;
+  var isLoading = false;
+  var isEnabledPanNumber = true;
+  late ValidPanCardResponsModel validPanCardResponsModel;
   var maritalList = [
     "Single", "Married", "Divorced", "Widowed" // Corrected from "Windowed"
   ];
@@ -32,7 +42,8 @@ class _PanNumberState extends State<PanNumber> {
 
     return Scaffold(
       backgroundColor: TColors.primary,
-      body: SafeArea( // Wrap with SafeArea
+      body: SafeArea(
+        // Wrap with SafeArea
         top: true,
         bottom: true,
         child: LayoutBuilder(
@@ -43,7 +54,8 @@ class _PanNumberState extends State<PanNumber> {
             return SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: screenHeight, // Ensures the scrollable content takes up the full screen height
+                  minHeight:
+                      screenHeight, // Ensures the scrollable content takes up the full screen height
                 ),
                 child: IntrinsicHeight(
                   child: Column(
@@ -51,7 +63,7 @@ class _PanNumberState extends State<PanNumber> {
                       const Spacer(),
                       Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal:screenWidth * 0.06, // 6% of screen width
+                          horizontal: screenWidth * 0.06, // 6% of screen width
                           vertical: screenHeight * 0.04, // 4% of screen height
                         ),
                         child: Column(
@@ -84,7 +96,6 @@ class _PanNumberState extends State<PanNumber> {
                               ),
                             ),
                             const SizedBox(height: 20),
-
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.00),
                               child: TextFormField(
@@ -93,32 +104,68 @@ class _PanNumberState extends State<PanNumber> {
                                   fontWeight: FontWeight.w600,
                                   color: TColors.black,
                                 ),
+                                enabled: isEnabledPanNumber,
                                 controller: panNumberController,
                                 keyboardType: TextInputType.text,
                                 textCapitalization: TextCapitalization.characters,
                                 inputFormatters: [
-                                  FilteringTextInputFormatter.allow(RegExp(r'[0-9A-Z]')),
+                                  FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
                                   LengthLimitingTextInputFormatter(10),
                                 ],
+                                onChanged: (text) {
+                                  if (text.length == 10) {
+                                    setState(() {
+                                      isPanValid = true;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isPanValid = false;
+                                    });
+                                  }
+                                },
                                 decoration: InputDecoration(
                                   suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      print('suffixIcon icon clicked!');
+                                    onTap: () async {
+                                      if (panNumberController.text.trim().length == 10) {
+                                        setState(() {
+                                          isLoading = true; // Start loader
+                                        });
+
+                                        try {
+                                          await getLeadValidPanCard(context, panNumberController.text);
+                                        } catch (e) {
+                                          print('Error validating PAN: $e');
+                                        } finally {
+                                          setState(() {
+                                            isLoading = false; // Stop loader
+                                          });
+                                        }
+                                      }
                                     },
-                                    child: Container(
-                                      height: 56,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFFDADADA),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                                        child: SvgPicture.asset(
-                                          "assets/credit_card/icons/ic_arrow_left.svg",
-                                          height: 20,
-                                          width: 20,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Container(
+                                          height: 56,
+                                          decoration: BoxDecoration(
+                                            color: isPanValid ? Color(0xFFFFE24B) : Color(0xFFDADADA),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                                            child: SvgPicture.asset(
+                                              "assets/credit_card/icons/ic_arrow_left.svg",
+                                              height: 20,
+                                              width: 20,
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        if (isLoading) // Show loader
+                                          CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                                            strokeWidth: 2,
+                                          ),
+                                      ],
                                     ),
                                   ),
                                   hintText: 'Enter PAN number',
@@ -141,7 +188,8 @@ class _PanNumberState extends State<PanNumber> {
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(color: Colors.white),
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
                                 ),
                                 validator: TValidator.validatePhoneNumber,
                               ),
@@ -156,7 +204,6 @@ class _PanNumberState extends State<PanNumber> {
                                 color: TColors.white,
                               ),
                             ),
-
                             const SizedBox(height: 10),
                             Text(
                               'Just trying to get to know you better.',
@@ -167,10 +214,13 @@ class _PanNumberState extends State<PanNumber> {
                               ),
                             ),
                             const SizedBox(height: 10),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: maritalList.sublist(0, 3).asMap().entries.map((entry) {
+                              children: maritalList
+                                  .sublist(0, 3)
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
                                 int index = entry.key;
                                 String status = entry.value;
 
@@ -184,11 +234,14 @@ class _PanNumberState extends State<PanNumber> {
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: _selectedIndex == index ? Colors.grey[300] : Colors.white,
+                                        color: _selectedIndex == index
+                                            ? Colors.grey[300]
+                                            : Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 16),
                                         child: Text(
                                           status,
                                           style: GoogleFonts.urbanist(
@@ -204,7 +257,6 @@ class _PanNumberState extends State<PanNumber> {
                               }).toList(),
                             ),
                             const SizedBox(height: 10),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -212,17 +264,21 @@ class _PanNumberState extends State<PanNumber> {
                                   child: GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        _selectedIndex = 3; // Update selected index for the fourth status
+                                        _selectedIndex =
+                                            3; // Update selected index for the fourth status
                                       });
                                       print('Widowed clicked!');
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: _selectedIndex == 3 ? Colors.grey[300] : Colors.white,
+                                        color: _selectedIndex == 3
+                                            ? Colors.grey[300]
+                                            : Colors.white,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 16),
                                         child: Text(
                                           maritalList[3],
                                           style: GoogleFonts.urbanist(
@@ -237,7 +293,6 @@ class _PanNumberState extends State<PanNumber> {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 20),
                             Row(
                               children: [
@@ -248,7 +303,8 @@ class _PanNumberState extends State<PanNumber> {
                                       isChecked = value ?? false;
                                     });
                                   },
-                                  fillColor: MaterialStateProperty.all(TColors.white),
+                                  fillColor:
+                                      MaterialStateProperty.all(TColors.white),
                                   activeColor: TColors.white,
                                   checkColor: TColors.primary,
                                   side: const BorderSide(
@@ -268,14 +324,12 @@ class _PanNumberState extends State<PanNumber> {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 30),
-
                             SizedBox(
                               width: screenWidth,
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal:screenWidth * 0.00,
+                                  horizontal: screenWidth * 0.00,
                                   vertical: screenHeight * 0.03,
                                 ),
                                 child: ElevatedButton(
@@ -283,9 +337,7 @@ class _PanNumberState extends State<PanNumber> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => CompleteProfile(
-
-                                        ),
+                                        builder: (context) => CompleteProfile(),
                                       ),
                                     );
                                   },
@@ -312,5 +364,32 @@ class _PanNumberState extends State<PanNumber> {
       ),
     );
   }
-}
 
+  getLeadValidPanCard(BuildContext context, String panNumber) async {
+    await Provider.of<PanProvider>(context, listen: false).getLeadValidPanCard(panNumber);
+    final productProvider = Provider.of<PanProvider>(context, listen: false);
+    if (productProvider.getLeadValidPanCardData != null) {
+      productProvider.getLeadValidPanCardData!.when(
+        success: (ValidPanCardResponsModel) async {
+          validPanCardResponsModel = ValidPanCardResponsModel;
+          if(validPanCardResponsModel.nameOnPancard!=null) {
+            isPanValid = true;
+            isEnabledPanNumber = false;
+          }else{
+            UtilsClass.showBottomToast(validPanCardResponsModel.message!);
+            isPanValid=false;
+            panNumberController.clear();
+            setState(() {
+              isPanValid =false;
+            });
+          }
+        },
+        failure: (exception) {
+          if (exception is ApiException) {
+            UtilsClass.showBottomToast(exception.errorMessage);
+          }
+        },
+      );
+    }
+  }
+}

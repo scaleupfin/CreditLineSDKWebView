@@ -309,8 +309,8 @@ class _OtpScreenState extends State<OtpScreen> {
           _isButtonTapped = true;
           authProvider.setLoading(false);
           if (otpResponceModel.status!) {
-            SharedPref.saveString(USER_ID, otpResponceModel.userId!);
-            SharedPref.saveString(TOKEN, otpResponceModel.userTokan!);
+            SharedPref.setStringFuture(USER_ID, otpResponceModel.userId!);
+            SharedPref.setStringFuture(TOKEN, otpResponceModel.userTokan!);
             SharedPref.saveBool(Is_Login, true);
             Navigator.pushReplacementNamed(
               context,

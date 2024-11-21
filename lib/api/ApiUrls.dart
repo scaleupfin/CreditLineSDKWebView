@@ -4,5 +4,7 @@ class ApiUrls{
 
   final String Genotp = '/aggregator/ConsumerAppHome/GenerateConsumerAppHomeOtp';
   final String otpValidate = '/aggregator/ConsumerAppHome/ConsumerAppHomeOTPValidate';
+  final String getLeadValidPanCard="/services/kyc/v1/KYCDoc/GetLeadValidPanCard";
+  final String GetAppHomeListForApp = '/aggregator/ConsumerAppHome/GetAppHomeListForApp';
 
 }

@@ -64,4 +64,14 @@ class SharedPref {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(key, value); // Save the boolean value
   }
+
+  static Future<String?> getStringFuture(String key) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key); // Returns a Future<bool?>
+  }
+
+  static Future<void> setStringFuture(String key, String value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value); // Save the boolean value
+  }
 }
